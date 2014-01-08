@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>Websockets</title>
+        <meta name="viewport" content="width=device-width">
+
+        <!-- syntax highlighting CSS -->
+        <link rel="stylesheet" href="/css/syntax.css">
+
+        <!-- Custom CSS -->
+        <link rel="stylesheet" href="/css/main.css">
+
+    </head>
+    <body>
+
+        <div class="site">
+          <div class="header">
+            <h1 class="title"><a href="/">Rob PW .:. Github Pages</a></h1>
+            <a class="extra" href="/">home</a>
+          </div>
+
+          <h2>Websockets</h2>
+<p class="meta">08 Jan 2014</p>
+
+<div class="post">
+<h1>Introduction</h1>
+
+<p>The beauty of using socket.io, in comparison to standard WebSockets is that cross-browser compatability issues are reduced; socket.io automatically provides fallbacks:</p>
+
+<ul>
+<li>  WebSocket</li>
+<li>  Adobe® Flash® Socket</li>
+<li>  AJAX long polling</li>
+<li>  AJAX multipart streaming</li>
+<li>  Forever Iframe</li>
+<li>  JSONP Polling</li>
+</ul>
+
+<h2>Server-Sent Events</h2>
+
+<p>Servers  and clients communicate through events, useful for splitting up types of response and binding to events.  </p>
+
+<p>Servers can &#39;emit&#39; events, and listen for them:</p>
+
+<h3>Server</h3>
+
+<div class="highlight"><pre><code class="javascript"><span class="c1">//Create a socket.io instance and start listening on port 8080</span>
+<span class="kd">var</span> <span class="nx">io</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;socket.io&#39;</span><span class="p">).</span><span class="nx">listen</span><span class="p">(</span><span class="mi">8080</span><span class="p">);</span>
+
+<span class="c1">//Listen for the connection event to be fired, this is done after a new successful connection is made to a client</span>
+<span class="c1">//Provides a reference to the opened socket / client, connection specific communication done via ref.</span>
+<span class="nx">io</span><span class="p">.</span><span class="nx">sockets</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;connection&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">socket</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//First, we&#39;ll emit (send) a Message Of The Day to our client.</span>
+    <span class="c1">//In this case, the event handle is &#39;motd&#39; and the data is &quot;Welcome to my server!&quot;</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;motd&#39;</span><span class="p">,</span> <span class="s2">&quot;Welcome to my server!&quot;</span><span class="p">);</span>
+
+    <span class="c1">//Now we&#39;ll add an event handler for the &#39;message&#39; event, once fired it will call the function</span>
+    <span class="c1">//An object / variable is passed, this contains all of the data sent by the client for that event. </span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;important_message&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">callback</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">callback</span><span class="p">(</span><span class="s1">&#39;Roger that&#39;</span><span class="p">);</span>
+    <span class="p">});</span>
+
+    <span class="c1">//We&#39;ll also wait for the disconnect event, this is fired when either: the client says it&#39;s disconnecting, or the client doesn&#39;t respond for a given time.</span>
+    <span class="c1">//Connection is upheld using heartbeats, think of it as a more advanced ping system</span>
+    <span class="c1">// Svr - &quot;Are you still there?&quot;</span>
+    <span class="c1">// Cli - &quot;Yep&quot;</span>
+    <span class="c1">// Svr - &quot;Are you still there?&quot;</span>
+    <span class="c1">// Cli - &quot;Yep&quot;</span>
+    <span class="c1">// Svr - &quot;Are you still there?&quot;</span>
+    <span class="c1">// -- waits</span>
+    <span class="c1">// Svr - &quot;Client presumed to have disconnected, fire disconnect event.&quot;</span>
+    <span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;disconnect&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//No data is returned, and the connection is no longer active, hence one cannot emit on socket.</span>
+        <span class="c1">//socket.broadcast is used to broadcast to all active connections, except the socket that sent it.</span>
+        <span class="c1">//We have passed an object with two properties: message and clientID</span>
+        <span class="c1">//In the background, the passed object is stringified as JSON, then sent</span>
+        <span class="c1">//At the other end, the client parses the JSON string into an object again, hence references are broken and functions cannot be communicated.</span>
+        <span class="nx">socket</span><span class="p">.</span><span class="nx">broadcast</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;client_disconnected&#39;</span><span class="p">,</span> <span class="p">{</span>
+            <span class="nx">message</span> <span class="o">:</span> <span class="s2">&quot;User: &quot;</span> <span class="o">+</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span> <span class="o">+</span> <span class="s2">&quot;, disconnected.&quot;</span><span class="p">,</span>
+            <span class="nx">clientID</span> <span class="o">:</span> <span class="nx">socket</span><span class="p">.</span><span class="nx">id</span>
+        <span class="p">});</span>
+    <span class="p">});</span>
+<span class="p">});</span>
+</code></pre></div>
+
+<h3>Client</h3>
+
+<div class="highlight"><pre><code class="javascript"><span class="cm">/* </span>
+<span class="cm">If socket.io is running on port 80, here is the shorthand script tag</span>
+<span class="cm">&lt;script src=&quot;/socket.io/socket.io.js&quot;&gt;&lt;/script&gt;</span>
+<span class="cm">Else, you&#39;ll have to specify the port and host.</span>
+<span class="cm">&lt;script src=&quot;http://localhost:8080/socket.io/socket.io.js&quot;&gt;&lt;/script&gt;</span>
+<span class="cm">*/</span>
+<span class="c1">//If port 80</span>
+<span class="c1">//var socket = io.connect();</span>
+<span class="kd">var</span> <span class="nx">socket</span> <span class="o">=</span> <span class="nx">io</span><span class="p">.</span><span class="nx">connect</span><span class="p">(</span><span class="s1">&#39;http://localhost:8080&#39;</span><span class="p">);</span>
+
+<span class="c1">//When we receive the event &#39;motd&#39; from the server, run the callback passing the data</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;motd&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//In this demo, the message &quot;Welcome to my server!&quot; will be alerted.</span>
+    <span class="nx">alert</span><span class="p">(</span><span class="s2">&quot;MOTD: &quot;</span> <span class="o">+</span> <span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="c1">//</span>
+<span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;message&#39;</span><span class="p">,</span> <span class="s2">&quot;&#39;ello friends, I am here.&quot;</span><span class="p">);</span>
+
+<span class="nx">socket</span><span class="p">.</span><span class="nx">emit</span><span class="p">(</span><span class="s1">&#39;important_message&#39;</span><span class="p">,</span> <span class="p">{</span>
+    <span class="nx">alias</span> <span class="o">:</span> <span class="s2">&quot;bookfort&quot;</span><span class="p">,</span>
+    <span class="nx">message</span> <span class="o">:</span> <span class="s2">&quot;This is bookfort to server, do you read me? Over.&quot;</span>
+<span class="p">},</span> <span class="kd">function</span><span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="nx">data</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">socket</span><span class="p">.</span><span class="nx">disconnect</span><span class="p">();</span> 
+</code></pre></div>
+
+<h2>Upload Files</h2>
+
+<h2>Response Type Support</h2>
+
+<h2>Basic Socket Communication</h2>
+
+<h2>ArrayBuffer and Blob Support</h2>
+
+</div>
+
+
+          <div class="footer">
+            <div class="contact">
+              <p>
+                Rob PW (Robert P. White)<br />
+                Software Engineer<br />
+                me@rob.pw
+              </p>
+            </div>
+            <div class="contact">
+              <p>
+                <a href="https://github.com/yourusername">github.com/Rob-pw</a><br />
+              </p>
+            </div>
+          </div>
+        </div>
+
+    </body>
+</html>
