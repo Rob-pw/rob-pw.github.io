@@ -284,5 +284,4 @@ ch
 # ArrayBuffer and Blob Support
 
 #References
-- http://socket.io/#how-to-use
-
+0. http://stackoverflow.com/questions/8902731/websockets-useful-for-reducing-overhead
