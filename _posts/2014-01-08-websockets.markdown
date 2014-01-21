@@ -307,7 +307,7 @@ JSON.parse(string);
 And that's pretty much all that there is to it! :) 
 
 ## Project usage
-?
+// Todo
 
 ## Github: https://github.com/Rob-pw/rob-pw.github.io/blob/master/_posts/2014-01-08-websockets.markdown
 
@@ -315,6 +315,7 @@ And that's pretty much all that there is to it! :)
 0. http://stackoverflow.com/questions/8902731/websockets-useful-for-reducing-overhead
 
 ## Internal related articles
+// Todo
 
 <!--
 # Upload Files
