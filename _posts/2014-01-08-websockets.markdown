@@ -271,7 +271,52 @@ Client says: {"name":"Robert White","alias":"Rob PW","website":"rob.pw","age":18
 Client has gone :c
 ```
 
+## Recap
+In summary, WebSockets are a simple modern technique for bidirectional communication, they have small overheads and are remarkably fast. 
 
+### On the client you initialise WebSockets using 
+``` javascript
+var socket = new WebSocket('ws://localhost:port');
+```
+
+### Have the following events to handle:
+``` javascript
+- open; once the connection is established.
+- message; when a message is received.
+- error; if an error is encountered.
+- close; once the connection is closed.
+- ping; if a ping request is received.
+- pong; if a pong request is received.
+```
+
+### Communicate via:
+``` javascript
+socket.send(data);
+```
+where data is a string.
+
+### To turn an object into a string, and back again, we can use:
+``` javascript
+// Creates a string
+JSON.stringify(object);
+
+// String to object
+JSON.parse(string);
+```
+
+And that's pretty much all that there is to it! :) 
+
+## Project usage
+?
+
+## Github: https://github.com/Rob-pw/rob-pw.github.io/blob/master/_posts/2014-01-08-websockets.markdown
+
+## Reference Links
+0. http://stackoverflow.com/questions/8902731/websockets-useful-for-reducing-overhead
+
+## Internal related articles
+
+<!--
 # Upload Files
 ch
 
@@ -282,6 +327,4 @@ ch
 
 
 # ArrayBuffer and Blob Support
-
-#References
-0. http://stackoverflow.com/questions/8902731/websockets-useful-for-reducing-overhead
+-->
