@@ -288,6 +288,12 @@ var socket = new WebSocket('ws://localhost:port');
 - ping; if a ping request is received.
 - pong; if a pong request is received.
 ```
+#### and can bind to these as such:
+``` javascript
+socket.onopen = function() {
+	console.log("Foo");
+};
+```
 
 ### Communicate via:
 ``` javascript
