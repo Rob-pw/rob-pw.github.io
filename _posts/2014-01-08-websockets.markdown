@@ -3,7 +3,7 @@
 ## Summary
 WebSockets are extremely useful for persistent real-time data communication, they're event driven, low overhead, and highly asyncronous which allows for lightweight non-blocking transport of information.
 
-## Browser Support
+## Browser Support, http://caniuse.com/#search=web%20sockets;
 WebSockets, without Socket.io: 
 	Browser	Supported From
 	Internet Explorer	10.0
@@ -53,18 +53,18 @@ Without further ado, let's cast our eye upon some examples.
 ``` javascript
 var socket = new WebSocket('ws://localhost:8081');
 ```
-*The "ws" protocol is insecure, similar to HTTP; if you're transferring personal data then you will need to research how to implement wss. *
+* The "ws" protocol is insecure, similar to HTTP; if you're transferring personal data then you will need to research how to implement wss. *
 
 This will automatically attempt establishment of a connection to the server running on localhost on port 8081.
 
 There are a number of events that can be attached to:
 
-- open; once the connection is established.
-- message; when a message is received.
-- error; if an error is encountered.
-- close; once the connection is closed.
-- ping; if a ping request is received.
-- pong; if a pong request is received.
+- onopen; once the connection is established.
+- onmessage; when a message is received.
+- onerror; if an error is encountered.
+- onclose; once the connection is closed.
+- onping; if a ping request is received.
+- onpong; if a pong request is received.
 
 Let's bind to the 'onopen' event so that we can perform actions once connected.
 
@@ -281,12 +281,12 @@ var socket = new WebSocket('ws://localhost:port');
 
 ### Have the following events to handle:
 ``` javascript
-- open; once the connection is established.
-- message; when a message is received.
-- error; if an error is encountered.
-- close; once the connection is closed.
-- ping; if a ping request is received.
-- pong; if a pong request is received.
+- onopen; once the connection is established.
+- onmessage; when a message is received.
+- onerror; if an error is encountered.
+- onclose; once the connection is closed.
+- onping; if a ping request is received.
+- onpong; if a pong request is received.
 ```
 #### and can bind to these as such:
 ``` javascript
